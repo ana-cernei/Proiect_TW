@@ -26,7 +26,7 @@
 		<span id="sprytf_reason">
           <input type="text" class="form-control input-sm" name="reason" placeholder="Holiday reason">
 		  <span class="textfieldRequiredMsg">Reason is required.</span>
-		  <span class="textfieldMinCharsMsg">Reason must specify at least 8 characters.</span>
+		  <span class="textfieldMinCharsMsg">Reason mustttt least 8 characters.</span>
 		</span>
         </div>
       </div>
