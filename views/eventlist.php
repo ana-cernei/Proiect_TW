@@ -3,7 +3,7 @@ require_once '../library/config.php'; // Include the config file for database co
 
 // Start the session if not already started
 if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+   session_start();
 }
 
 // Check user type
@@ -41,8 +41,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_conference']) && 
     $location = mysqli_real_escape_string($dbConn, $_POST['location']);
     $addedBy = mysqli_real_escape_string($dbConn, $_SESSION['calendar_fd_user_name']); // Fetch the username
 
-    $sql = "INSERT INTO conferences (name, description, date, number_of_people, location, added_by) 
-            VALUES ('$name', '$description', '$date', $number_of_people, '$location', '$addedBy')";
+    // Handle file upload
+    $imagePath = 'uploads/default.png'; // Default image if no upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
+        }
+        $uniqueFileName = uniqid() . '-' . basename($_FILES['image']['name']);
+        $imagePath = $uploadDir . $uniqueFileName;
+    
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+            echo "<p style='color: green;'>Image uploaded successfully: $imagePath</p>"; // Debugging feedback
+        } else {
+            echo "<p style='color: red;'>Error: Unable to upload image.</p>";
+            $imagePath = 'uploads/default.png'; // Fallback to default
+        }
+    } else {
+        $imagePath = 'uploads/default.png'; // No file uploaded or error occurred
+    }
+    
+
+    // Insert conference data into the database
+    $sql = "INSERT INTO conferences (name, description, date, number_of_people, location, added_by, image) 
+            VALUES ('$name', '$description', '$date', $number_of_people, '$location', '$addedBy', '$imagePath')";
 
     if (mysqli_query($dbConn, $sql)) {
         echo "<script>alert('Conference added successfully!');</script>";
@@ -104,177 +126,222 @@ mysqli_close($dbConn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Management</title>
+   
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 90%;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h2, h3 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background-color: #007bff;
-            color: white;
-        }
-        table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        table tr:hover {
-            background-color: #f1f1f1;
-        }
-        form {
-            max-width: 600px;
-            margin: 20px auto;
-        }
-        form div {
-            margin-bottom: 15px;
-        }
-        form label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        form input, form textarea, form button {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        form button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        form button:hover {
-            background-color: #218838;
-        }
+/* Container adjustments for overall spacing */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card design for a bigger, cleaner, professional look */
+.card {
+    margin: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+    width: 100%; /* Allow flexible width */
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Image adjustments for large, consistent visuals */
+.card img {
+    height: 250px; /* Larger images */
+    object-fit: cover;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Card body styling */
+.card-body {
+    padding: 20px;
+    text-align: center;
+    font-family: "Arial", sans-serif;
+}
+
+/* Title styling for better readability and impact */
+.card-title {
+    font-size: 1.5rem; /* Larger text for titles */
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 12px;
+    text-transform: capitalize;
+}
+
+/* Text and paragraph improvements */
+.card-text {
+    font-size: 1.2rem; /* Bigger descriptive text */
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Smaller text details */
+.card p {
+    margin: 5px 0;
+    font-size: 1rem; /* Slightly larger details */
+    color: #555;
+}
+
+/* Action button design */
+.btn-custom {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 25px; /* Larger button */
+    font-size: 1rem; /* Bigger text */
+    font-weight: 600;
+    display: inline-block;
+    width: 100%; /* Full-width button */
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Subtle hover effect */
+}
+
+/* Flexbox for better layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Space cards evenly */
+}
+
+/* Column adjustments for larger cards */
+.col-md-4 {
+    flex: 0 0 45%; /* Two cards per row for larger display */
+    max-width: 45%;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        flex: 0 0 100%; /* Full width on smaller screens */
+        max-width: 100%;
+    }
+}
+
+/* Consistent font scaling for smaller screens */
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+    }
+
+    .btn-custom {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+}
+
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Event Management</h2>
+<div class="container my-4">
+    
 
     <?php if ($showAddForm) { ?>
-        <h3>Add a New Conference</h3>
-        <form action="eventlist.php" method="POST">
+        <h3 class="text-center">Add a New Conference</h3>
+        <form action="?v=LIST" method="POST" class="mb-4">
             <input type="hidden" name="add_conference" value="1">
-            <div>
-                <label for="name">Conference Name:</label>
-                <input type="text" id="name" name="name" required>
+            <div class="mb-3">
+                <label for="name" class="form-label">Conference Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
             </div>
-            <div>
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" required></textarea>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <textarea id="description" name="description" class="form-control" required></textarea>
             </div>
-            <div>
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" required>
+            <div class="mb-3">
+                <label for="date" class="form-label">Date:</label>
+                <input type="date" id="date" name="date" class="form-control" required>
             </div>
-            <div>
-                <label for="number_of_people">Number of People:</label>
-                <input type="number" id="number_of_people" name="number_of_people" required>
+            <div class="mb-3">
+                <label for="number_of_people" class="form-label">Number of People:</label>
+                <input type="number" id="number_of_people" name="number_of_people" class="form-control" required>
             </div>
-            <div>
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" required>
+            <div class="mb-3">
+                <label for="location" class="form-label">Location:</label>
+                <input type="text" id="location" name="location" class="form-control" required>
             </div>
-            <button type="submit">Add Conference</button>
+            <div class="mb-3">
+            <label for="image" class="form-label">Upload Image:</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+        </div>
+            <button type="submit" class="btn btn-success w-100">Add Conference</button>
         </form>
     <?php } ?>
 
     <?php if (!empty($allConferences)) { ?>
-        <h3>All Conferences</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th>Number of People</th>
-                    <th>Location</th>
-                    <th>Added By</th> <!-- New Column -->
-                    <?php if ($type == 'student') { ?>
-                        <th>Action</th>
-                    <?php } ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($allConferences as $conference) { ?>
-                    <tr>
-                        <td><?php echo $conference['id']; ?></td>
-                        <td><?php echo htmlspecialchars($conference['name']); ?></td>
-                        <td><?php echo htmlspecialchars($conference['description']); ?></td>
-                        <td><?php echo $conference['date']; ?></td>
-                        <td><?php echo $conference['number_of_people']; ?></td>
-                        <td><?php echo htmlspecialchars($conference['location']); ?></td>
-                        <td><?php echo htmlspecialchars($conference['added_by']); ?></td> <!-- Display Username -->
-                        <?php if ($type == 'student') { ?>
-                            <td>
-                                <form action="eventlist.php" method="POST">
+        <div class="row">
+            <?php foreach ($allConferences as $conference) { ?>
+                <div class="col-md-4">
+                    <div class="card">
+                    <img src="<?php echo htmlspecialchars($conference['image']); ?>" class="card-img-top" alt="Conference Image">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($conference['name']); ?></h5>
+                            <p class="card-text"><?php echo htmlspecialchars($conference['description']); ?></p>
+                            <p><strong>Date:</strong> <?php echo $conference['date']; ?></p>
+                            <p><strong>Location:</strong> <?php echo htmlspecialchars($conference['location']); ?></p>
+                            <p><strong>Added By:</strong> <?php echo htmlspecialchars($conference['added_by']); ?></p>
+                            <?php if ($type == 'student') { ?>
+                                <form action="?v=LIST" method="POST">
                                     <input type="hidden" name="conference_id" value="<?php echo $conference['id']; ?>">
-                                    <button type="submit">Participate</button>
+                                    <button type="submit" class="btn btn-custom w-100">Participate</button>
                                 </form>
-                            </td>
-                        <?php } ?>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
     <?php } ?>
 
     <?php if ($selectedConferenceId !== null) { ?>
-        <h3>Participate in Conference</h3>
-        <form action="eventlist.php" method="POST" enctype="multipart/form-data">
+        <h3 class="text-center">Participate in Conference</h3>
+        <form action="?v=LIST" method="POST" enctype="multipart/form-data" class="mb-4">
             <input type="hidden" name="conference_id" value="<?php echo $selectedConferenceId; ?>">
             <input type="hidden" name="submit_participation" value="1">
-            <div>
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
             </div>
-            <div>
-                <label for="education">Education:</label>
-                <input type="text" id="education" name="education" required>
+            <div class="mb-3">
+                <label for="education" class="form-label">Education:</label>
+                <input type="text" id="education" name="education" class="form-control" required>
             </div>
-            <div>
-                <label for="age">Age:</label>
-                <input type="number" id="age" name="age" required>
+            <div class="mb-3">
+                <label for="age" class="form-label">Age:</label>
+                <input type="number" id="age" name="age" class="form-control" required>
             </div>
-            <div>
-                <label for="job">Job:</label>
-                <input type="text" id="job" name="job" required>
+            <div class="mb-3">
+                <label for="job" class="form-label">Job:</label>
+                <input type="text" id="job" name="job" class="form-control" required>
             </div>
-            <div>
-                <label for="paper">Upload Paper:</label>
-                <input type="file" id="paper" name="paper" accept=".pdf,.doc,.docx">
+            <div class="mb-3">
+                <label for="paper" class="form-label">Upload Paper:</label>
+                <input type="file" id="paper" name="paper" class="form-control" accept=".pdf,.doc,.docx">
             </div>
-            <button type="submit">Submit Participation</button>
+            <button type="submit" class="btn btn-primary w-100">Submit Participation</button>
         </form>
     <?php } ?>
 </div>
+
+<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

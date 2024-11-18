@@ -127,12 +127,12 @@ if (isset($_POST['name']) && isset($_POST['pwd'])) {
           </div>
 		  
 		  <div class="form-group has-feedback">
-		  	<label for="exampleInputEmail1">Uset Type</label>
+		  	<label for="exampleInputEmail1">User Type</label>
 			<span id="sprytf_type">
 			<select name="type"  class="form-control input-sm">
 				<option value=""> -- select user type --</option>
-				<option value="student">Student</option>
-				<option value="teacher">Teacher</option>
+				<option value="student">Speaker</option>
+				<option value="teacher">Organizer</option>
 			</select>
 			<span class="selectRequiredMsg">Please select User Type.</span>
 			</span>

@@ -3,13 +3,13 @@
   <ul class="sidebar-menu">
     <li class="header">MAIN NAVIGATION</li>
     <li class="treeview"> 
-		<a href="<?php echo WEB_ROOT; ?>views/?v=DB"><i class="fa fa-calendar"></i><span>Events Calendar</span></a>
+		<a href="<?php echo WEB_ROOT; ?>views/?v=DB"><i class="fa fa-calendar"></i><span>Conference timeframes</span></a>
 	</li>
     <li class="treeview"> 
-		<a href="<?php echo WEB_ROOT; ?>views/?v=LIST"><i class="fa fa-newspaper-o"></i><span>Event Booking</span></a>
+		<a href="<?php echo WEB_ROOT; ?>views/?v=LIST"><i class="fa fa-newspaper-o"></i><span>Conference setup</span></a>
 	</li>
 	<li class="treeview"> 
-		<a href="<?php echo WEB_ROOT; ?>views/?v=USERS"><i class="fa fa-users"></i><span>User Details</span></a>
+		<a href="<?php echo WEB_ROOT; ?>views/?v=USERS"><i class="fa fa-users"></i><span>Speaker Details</span></a>
 	</li>
 	<?php 
 	$type = $_SESSION['calendar_fd_user']['type'];

@@ -83,9 +83,9 @@
 	  </div>
 				  
 	  <div class="form-group">
-        <label for="exampleInputPassword1">No of Peoples</label>
+        <label for="exampleInputPassword1">Nr of papers</label>
 		<span id="sprytf_ucount">
-        <input type="text" name="ucount" class="form-control input-sm" placeholder="No of peoples" >
+        <input type="text" name="ucount" class="form-control input-sm" placeholder="Nr of papers" >
 		<span class="textfieldRequiredMsg">No of peoples is required.</span>
 		<span class="textfieldInvalidFormatMsg">Invalid Format.</span>
       </div>

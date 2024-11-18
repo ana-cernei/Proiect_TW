@@ -79,11 +79,14 @@ mysqli_close($dbConn);
                             <td><?php echo $participant['age']; ?></td>
                             <td><?php echo htmlspecialchars($participant['job']); ?></td>
                             <td>
-                                <?php if ($participant['paper']) { ?>
-                                    <a href="../<?php echo $participant['paper']; ?>" target="_blank">View Paper</a>
-                                <?php } else { ?>
-                                    No paper uploaded
-                                <?php } ?>
+                            <?php 
+                            if ($participant['paper']) { 
+                                $filePath = $participant['paper'];
+                                echo "<a href='$filePath' target='_blank'>View Paper</a>";
+                            } else { 
+                                echo "No paper uploaded"; 
+                            } 
+                            ?>
                             </td>
                             <td><?php echo htmlspecialchars($participant['conference_name']); ?></td>
                             <td><?php echo $participant['conference_date']; ?></td>

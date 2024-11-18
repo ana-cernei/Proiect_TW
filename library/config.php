@@ -4,7 +4,7 @@ ini_set('display_errors', 'on');
 //error_reporting(E_ALL);
 
 // start the session
-session_start();
+//session_start();
 
 // database connection config
 

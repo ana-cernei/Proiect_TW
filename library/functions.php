@@ -19,6 +19,19 @@ function random_string($length = 8) {
     }
     return strtoupper($randomString);
 }
+// Fetch user records
+function getUserRecords() {
+    global $dbConn;
+    $sql = "SELECT * FROM tbl_users ORDER BY id ASC";
+    $result = mysqli_query($dbConn, $sql);
+
+    $records = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $records[] = $row;
+    }
+
+    return $records;
+}
 
 // Check if user session exists
 function checkFDUser() {
