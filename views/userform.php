@@ -44,7 +44,7 @@
         <label for="exampleInputEmail1">Email address</label>
 		<span id="sprytf_email">
         <input type="text" name="email" class="form-control input-sm" placeholder="Enter email">
-		<span class="textfieldRequiredMsg">Email ID is required.</span>
+		<span class="textfieldRequiredMsg">Email ID is needed.</span>
 		<span class="textfieldInvalidFormatMsg">Please enter a valid email (user@domain.com).</span>
 		</span>
       </div>
