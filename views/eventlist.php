@@ -39,30 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_conference']) && 
     $date = mysqli_real_escape_string($dbConn, $_POST['date']);
     $number_of_people = (int)$_POST['number_of_people'];
     $location = mysqli_real_escape_string($dbConn, $_POST['location']);
-    $addedBy = mysqli_real_escape_string($dbConn, $_SESSION['calendar_fd_user_name']); // Fetch the username
+    $addedBy = mysqli_real_escape_string($dbConn, $_SESSION['calendar_fd_user_name']); 
 
-    // Handle file upload
-    $imagePath = 'uploads/default.png'; // Default image if no upload
+    $imagePath = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/';
+        $uploadDir = 'views/uploads/';
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
+            mkdir($uploadDir, 0777, true); 
         }
-        $uniqueFileName = uniqid() . '-' . basename($_FILES['image']['name']);
-        $imagePath = $uploadDir . $uniqueFileName;
-    
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
-            echo "<p style='color: green;'>Image uploaded successfully: $imagePath</p>"; // Debugging feedback
-        } else {
+        $imagePath = $uploadDir . basename($_FILES['image']['name']);
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
             echo "<p style='color: red;'>Error: Unable to upload image.</p>";
-            $imagePath = 'uploads/default.png'; // Fallback to default
+            $imagePath = null;
         }
-    } else {
-        $imagePath = 'uploads/default.png'; // No file uploaded or error occurred
     }
-    
 
-    // Insert conference data into the database
     $sql = "INSERT INTO conferences (name, description, date, number_of_people, location, added_by, image) 
             VALUES ('$name', '$description', '$date', $number_of_people, '$location', '$addedBy', '$imagePath')";
 
@@ -72,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_conference']) && 
         echo "<p style='color: red;'>Error: " . mysqli_error($dbConn) . "</p>";
     }
 }
+
 
 // Handle participation form submission (student only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conference_id']) && $type == 'student') {
@@ -257,42 +249,47 @@ mysqli_close($dbConn);
 
     <?php if ($showAddForm) { ?>
         <h3 class="text-center">Add a New Conference</h3>
-        <form action="?v=LIST" method="POST" class="mb-4">
-            <input type="hidden" name="add_conference" value="1">
-            <div class="mb-3">
-                <label for="name" class="form-label">Conference Name:</label>
-                <input type="text" id="name" name="name" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description:</label>
-                <textarea id="description" name="description" class="form-control" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Date:</label>
-                <input type="date" id="date" name="date" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="number_of_people" class="form-label">Number of People:</label>
-                <input type="number" id="number_of_people" name="number_of_people" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="location" class="form-label">Location:</label>
-                <input type="text" id="location" name="location" class="form-control" required>
-            </div>
-            <div class="mb-3">
-            <label for="image" class="form-label">Upload Image:</label>
-            <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
-        </div>
-            <button type="submit" class="btn btn-success w-100">Add Conference</button>
-        </form>
+        <form action="?v=LIST" method="POST" enctype="multipart/form-data" class="mb-4">
+    <input type="hidden" name="add_conference" value="1">
+    <div class="mb-3">
+        <label for="name" class="form-label">Conference Name:</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description:</label>
+        <textarea id="description" name="description" class="form-control" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="date" class="form-label">Date:</label>
+        <input type="date" id="date" name="date" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="number_of_people" class="form-label">Number of People:</label>
+        <input type="number" id="number_of_people" name="number_of_people" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location:</label>
+        <input type="text" id="location" name="location" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="image" class="form-label">Upload Image:</label>
+        <input type="file" id="image" name="image" class="form-control" accept="image/*">
+    </div>
+    <button type="submit" class="btn btn-success w-100">Add Conference</button>
+</form>
+
     <?php } ?>
 
     <?php if (!empty($allConferences)) { ?>
         <div class="row">
             <?php foreach ($allConferences as $conference) { ?>
                 <div class="col-md-4">
-                    <div class="card">
-                    <img src="<?php echo htmlspecialchars($conference['image']); ?>" class="card-img-top" alt="Conference Image">
+                <div class="card">
+    <?php if (!empty($conference['image'])) { ?>
+        <img src="<?php echo htmlspecialchars($conference['image']); ?>" alt="Conference Image" class="card-img-top">
+    <?php } else { ?>
+        <img src="default-image.jpg" alt="Default Image" class="card-img-top">
+    <?php } ?>
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($conference['name']); ?></h5>
                             <p class="card-text"><?php echo htmlspecialchars($conference['description']); ?></p>
