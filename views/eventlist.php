@@ -12,7 +12,7 @@ $type = $_SESSION['calendar_fd_user']['type'] ?? '';
 // Establish the database connection
 $dbConn = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 
-// Check the database connection
+// Check database connection
 if (!$dbConn) {
     die("MySQL connection failed: " . mysqli_connect_error());
 }
