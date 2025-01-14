@@ -1,38 +1,34 @@
 # Event-Management
-Following are the features available in the project:
-**Admin Module:**
+Funcționlitățile proiectului sunt
 
--   Admin can create/delete/view Events
--   Admin can add a holiday events to Calender
--   Admin can Register Users
+-  Înregistrarea și logarea utilizatorilor
+-  Rolurile utilizatorilor (Organizator, Speaker)
+-  Gestionarea conferințelor de către organizator
+-  Formular de înscriere la conferințe pentru speaker
+-  Calendar în care apar conferințele planificate
 
-**Teacher Module**
 
--   Teacher can book an Event
--   View all bookings in the system
--   View User List approvals
+**Organizer**
 
-**Student Module**
+-  Activare cont speaker
+-  Crearea unei conferinte cu detaliile aferente + publicarea pe pagina speakerilor
+-  Posibilitatea de a vedea toti participantii inscrisi la conferinta sa
+-  Stabilirea programului pe ore
 
--   Student can view Event
--   View all event list details by Week/Month/Day calendar view
 
-**Technology User:**
+**Speaker**
 
--   UI/HTML: Bootstrap HTML responsive Template (Mobile, Tablet ready)
--   JavaScript: JQuery, fullcalender plugin, Spry Framework (for form validations)
--   Backend: PHP, MySQL
+-  Vizualizarea tuturor conferintelor
+-  Posibilitatea inscrierii la o conferinta printr-un formular
+-  Posibilitatea de a vedea programul conferintei in calendar
 
-**Screenshots:**
 
-***1) Login Page:***
 
-![Login Page](http://www.techzoo.org/wp-content/uploads/2018/03/01-Event-Management-Login.png)		
+**Tehnologii**
 
-**2) Admin Dashboard**
+Tehnologii utilizate: PHP, MySQL, FullCalendar, AJAX, Bootstrap,JavaScript
+-  JavaScript: Adăugarea de interactivitate și validare a formularelor.
+-  XAMPP Server: Server local pentru dezvoltare și testare.
 
-![Admin Dashboard Screen](http://www.techzoo.org/wp-content/uploads/2018/03/02-Admin-Book-Event-1.png)
 
-**3) User Details**
 
-![User Event Registration Page](http://www.techzoo.org/wp-content/uploads/2018/03/03-User-Event-Details-1.png)
