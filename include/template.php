@@ -59,6 +59,7 @@ $self = WEB_ROOT . 'admin/index.php';
 		<?php include('footer.php'); ?>
 	</footer>
 </div>
+
 <!-- ./wrapper -->
 </body>
 </html>

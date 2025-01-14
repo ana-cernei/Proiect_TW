@@ -96,8 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conference_id']) && $
       }
 
       // Insert participant data into the database
-      $sql = "INSERT INTO participants (conference_id, name, education, age, job, paper, added_by)
-              VALUES ($conferenceId, '$name', '$education', $age, '$job', '$paperFileName', '$organizer')";
+      $sql = "INSERT INTO participants (conference_id, name, education, age, job, paper, added_by, status)
+      VALUES ($conferenceId, '$name', '$education', $age, '$job', '$paperFileName', '$organizer', 'Pending')";
+
 
       if (mysqli_query($dbConn, $sql)) {
           echo "<script>alert('Participation submitted successfully!');</script>";
